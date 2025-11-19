@@ -43,3 +43,11 @@ pip install scikit-learn
 pip install matplotlib
 ```
 Jupyter Notebook Installation Guide  https://jupyter.org/install
+
+## Déploiement Streamlit (Docker)
+
+1. **Générer les artefacts** : `python model.py` (assure `artifacts/` contient un modèle).
+2. **Construire l'image** : `docker build -t diabetes-app .`
+3. **Lancer l'app** : `docker run -p 8501:8501 diabetes-app`
+
+L'interface Streamlit est accessible via http://localhost:8501 .
