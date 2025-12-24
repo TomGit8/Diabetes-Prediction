@@ -15,6 +15,7 @@ from __future__ import annotations
 import json
 import logging
 import pickle
+import boto3
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Dict, Iterable, List, Tuple
@@ -60,6 +61,7 @@ class TrainingConfig:
     random_state: int = 42
     outlier_multiplier: float = 1.5
     artifact_dir: Path = Path("artifacts")
+    s3_bucket: str = "s3-g3mg05"
 
 
 def load_data(config: TrainingConfig) -> pd.DataFrame:
@@ -280,6 +282,19 @@ def save_artifacts(
     with config_path.open("w", encoding="utf-8") as f:
         json.dump(asdict(config), f, indent=2, default=str)
     logging.info("Persisted run configuration to %s", config_path)
+
+    # Upload to S3
+    s3 = boto3.client("s3")
+    try:
+        for file_path in [model_path, metrics_path, config_path]:
+            s3.upload_file(
+                str(file_path),
+                config.s3_bucket,
+                f"artifacts/{file_path.name}"
+            )
+            logging.info("Uploaded %s to s3://%s/artifacts/", file_path.name, config.s3_bucket)
+    except Exception as e:
+        logging.error("Failed to upload to S3: %s", e)
 
 
 def run_training_job(config: TrainingConfig) -> None:
