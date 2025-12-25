@@ -20,4 +20,5 @@ RUN python model.py
 EXPOSE 8501
 
 # Le fichier .streamlit/config.toml sera copie automatiquement avec COPY . .
-CMD ["streamlit", "run", "app.py"]
+# Force des parametres agressifs pour contourner les blocages WebSocket AWS
+CMD ["streamlit", "run", "app.py", "--server.enableCORS=false", "--server.enableXsrfProtection=false", "--server.enableWebsocketCompression=false"]
