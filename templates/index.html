@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,6 +15,7 @@
             --card-bg: #ffffff;
             --text: #1f2937;
         }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--bg);
@@ -24,6 +26,7 @@
             justify-content: center;
             min-height: 100vh;
         }
+
         .container {
             background-color: var(--card-bg);
             padding: 2rem;
@@ -32,34 +35,53 @@
             max-width: 600px;
             width: 100%;
         }
+
         h1 {
             text-align: center;
             color: var(--primary);
             margin-bottom: 2rem;
             font-size: 1.8rem;
         }
+
         h1 span {
             font-size: 2.2rem;
             display: block;
         }
+
         .grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 1.5rem;
         }
+
         @media (max-width: 640px) {
-            .grid { grid-template-columns: 1fr; }
+            .grid {
+                grid-template-columns: 1fr;
+            }
         }
+
         .form-group {
             display: flex;
             flex-direction: column;
         }
+
         label {
             font-weight: 600;
             margin-bottom: 0.5rem;
             font-size: 0.9rem;
             color: #4b5563;
+            display: flex;
+            justify-content: space-between;
         }
+
+        .unit-badge {
+            font-size: 0.75rem;
+            background-color: #e5e7eb;
+            padding: 0.1rem 0.4rem;
+            border-radius: 0.25rem;
+            color: #6b7280;
+        }
+
         input {
             padding: 0.75rem;
             border: 1px solid #d1d5db;
@@ -67,11 +89,20 @@
             font-size: 1rem;
             transition: border-color 0.2s;
         }
+
         input:focus {
             outline: none;
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
         }
+
+        .desc-text {
+            font-size: 0.8rem;
+            color: #9ca3af;
+            margin-top: 0.2rem;
+            font-style: italic;
+        }
+
         .submit-btn {
             grid-column: 1 / -1;
             background-color: var(--primary);
@@ -84,13 +115,42 @@
             cursor: pointer;
             transition: background-color 0.2s, transform 0.1s;
             margin-top: 1rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
+
         .submit-btn:hover {
             background-color: var(--primary-dark);
         }
+
         .submit-btn:active {
             transform: scale(0.98);
         }
+
+        /* Loading Spinner */
+        .spinner {
+            display: none;
+            width: 1.2rem;
+            height: 1.2rem;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 0.5rem;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loading .spinner {
+            display: block;
+        }
+
+        /* Result Card with Gauge */
         .result-card {
             margin-top: 2rem;
             padding: 1.5rem;
@@ -98,67 +158,122 @@
             text-align: center;
             animation: fadeIn 0.5s ease-out;
         }
+
         .result-safe {
-            background-color: #d1fae5;
+            background-color: #ecfdf5;
             color: #065f46;
-            border: 1px solid #34d399;
+            border: 1px solid #10b981;
         }
+
         .result-danger {
-            background-color: #fee2e2;
+            background-color: #fef2f2;
             color: #991b1b;
-            border: 1px solid #f87171;
+            border: 1px solid #ef4444;
         }
+
         .result-title {
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             font-weight: bold;
-            margin-bottom: 0.5rem;
+            margin-bottom: 1rem;
         }
-        .prob {
-            font-size: 1.2rem;
-            opacity: 0.9;
+
+        .gauge-container {
+            height: 1.5rem;
+            background-color: #e5e7eb;
+            border-radius: 1rem;
+            overflow: hidden;
+            margin: 1rem 0;
+            position: relative;
         }
+
+        .gauge-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #fbbf24, #ef4444);
+            width: 0%;
+            transition: width 1s ease-out;
+            border-radius: 1rem;
+        }
+
+        .prob-text {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
         .error-msg {
             color: var(--danger);
             text-align: center;
             margin-bottom: 1rem;
         }
+
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <h1><span>🩺</span> Prédicteur Diabète</h1>
-        
+
         {% if error %}
-            <div class="error-msg">{{ error }}</div>
+        <div class="error-msg">{{ error }}</div>
         {% endif %}
 
         {% if prediction %}
-            <div class="result-card {% if probability >= 50 %}result-danger{% else %}result-safe{% endif %}">
-                <div class="result-title">{{ prediction }}</div>
-                <div class="prob">Probabilité estimée : <strong>{{ probability }}%</strong></div>
+        <div class="result-card {% if probability >= 50 %}result-danger{% else %}result-safe{% endif %}">
+            <div class="result-title">{{ prediction }}</div>
+
+            <div class="gauge-container">
+                <div class="gauge-bar" style="width: {{ probability }}%;"></div>
             </div>
-            <div style="text-align: center; margin-top: 1.5rem;">
-                <a href="/" style="color: var(--primary); text-decoration: none; font-weight: bold;">← Nouvelle prédiction</a>
-            </div>
+
+            <div class="prob-text">Probabilité de risque : {{ probability }}%</div>
+        </div>
+        <div style="text-align: center; margin-top: 1.5rem;">
+            <a href="/"
+                style="color: var(--primary); text-decoration: none; font-weight: bold; padding: 0.5rem 1rem; border: 1px solid var(--primary); border-radius: 0.5rem;">
+                ← Nouvelle prédiction
+            </a>
+        </div>
         {% else %}
-            <form method="POST" action="/">
-                <div class="grid">
-                    {% for feature, config in features.items() %}
-                    <div class="form-group">
-                        <label for="{{ feature }}">{{ feature }}</label>
-                        <input type="number" id="{{ feature }}" name="{{ feature }}" 
-                               min="{{ config.min }}" max="{{ config.max }}" 
-                               step="{{ config.step }}" value="{{ config.mean }}" required>
-                    </div>
-                    {% endfor %}
-                    <button type="submit" class="submit-btn">Lancer l'analyse</button>
+        <form method="POST" action="/" onsubmit="showLoading()">
+            <div class="grid">
+                {% for feature, config in features.items() %}
+                {% set info = field_info.get(feature, {}) %}
+                <div class="form-group">
+                    <label for="{{ feature }}">
+                        {{ info.label or feature }}
+                        {% if info.unit %}<span class="unit-badge">{{ info.unit }}</span>{% endif %}
+                    </label>
+                    <input type="number" id="{{ feature }}" name="{{ feature }}" min="{{ config.min }}"
+                        max="{{ config.max }}" step="any" value="{{ config.mean }}" required>
+                    {% if info.desc %}<span class="desc-text">{{ info.desc }}</span>{% endif %}
                 </div>
-            </form>
+                {% endfor %}
+                <button type="submit" class="submit-btn" id="btnSubmit">
+                    <div class="spinner"></div>
+                    <span id="btnText">Lancer l'analyse</span>
+                </button>
+            </div>
+        </form>
         {% endif %}
     </div>
+
+    <script>
+        function showLoading() {
+            const btn = document.getElementById('btnSubmit');
+            btn.classList.add('loading');
+            document.getElementById('btnText').innerText = "Analyse en cours...";
+        }
+    </script>
 </body>
+
 </html>

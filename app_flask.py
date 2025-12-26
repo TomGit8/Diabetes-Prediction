@@ -52,6 +52,18 @@ def load_stats(data_path, target_column):
         }
     return features_config
 
+# Metadata for UI
+FIELD_INFO = {
+    "Pregnancies": {"label": "Grossesses", "unit": "", "desc": "Nombre de fois enceinte"},
+    "Glucose": {"label": "Glucose", "unit": "mg/dL", "desc": "Concentration plasmatique (test 2h)"},
+    "BloodPressure": {"label": "Tension Artérielle", "unit": "mm Hg", "desc": "Pression artérielle diastolique"},
+    "SkinThickness": {"label": "Épaisseur Cutanée", "unit": "mm", "desc": "Épaisseur du pli triceps"},
+    "Insulin": {"label": "Insuline", "unit": "mu U/ml", "desc": "Insuline sérique (2h)"},
+    "BMI": {"label": "IMC", "unit": "kg/m²", "desc": "Indice de Masse Corporelle"},
+    "DiabetesPedigreeFunction": {"label": "Prédisposition Génétique", "unit": "score", "desc": "Fonction pedigree diabète"},
+    "Age": {"label": "Âge", "unit": "ans", "desc": "Âge du patient"}
+}
+
 # Initialize app state
 config = load_config()
 model = load_model(Path(config["artifact_dir"]))
@@ -64,7 +76,7 @@ def index():
     
     if request.method == "POST":
         if not model:
-            return render_template("index.html", features=features_config, error="Modèle introuvable.")
+            return render_template("index.html", features=features_config, field_info=FIELD_INFO, error="Modèle introuvable.")
         
         # Collect form data
         input_data = {}
@@ -88,9 +100,9 @@ def index():
             prediction = "Diabétique" if prob_value >= 0.5 else "Non diabétique"
             
         except Exception as e:
-            return render_template("index.html", features=features_config, error=f"Erreur de prédiction: {str(e)}")
+            return render_template("index.html", features=features_config, field_info=FIELD_INFO, error=f"Erreur de prédiction: {str(e)}")
 
-    return render_template("index.html", features=features_config, prediction=prediction, probability=probability)
+    return render_template("index.html", features=features_config, field_info=FIELD_INFO, prediction=prediction, probability=probability)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8501)
