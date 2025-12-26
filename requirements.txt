@@ -1,7 +1,8 @@
 pandas
 numpy
 scikit-learn
-streamlit
+flask
+gunicorn
 seaborn
 matplotlib
 boto3

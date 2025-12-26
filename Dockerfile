@@ -17,8 +17,5 @@ COPY . .
 # Entrainement du modele pendant le build pour garantir sa presence
 RUN python model.py
 
-EXPOSE 8501
-
-# Le fichier .streamlit/config.toml sera copie automatiquement avec COPY . .
-# Force des parametres agressifs pour contourner les blocages WebSocket AWS
-CMD ["streamlit", "run", "app.py", "--server.enableCORS=false", "--server.enableXsrfProtection=false", "--server.enableWebsocketCompression=false"]
+# Lancement avec Gunicorn (Serveur WSGI Production)
+CMD ["gunicorn", "-w", "1", "-b", "0.0.0.0:8501", "app_flask:app"]
