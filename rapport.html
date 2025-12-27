@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rapport MLOps - Diabetes Prediction</title>
+    <style>
+        @page {
+            margin: 2cm;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 60px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding-bottom: 30px;
+            border-bottom: 3px solid #2563eb;
+        }
+
+        .header h1 {
+            color: #2563eb;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header .subtitle {
+            color: #666;
+            font-size: 1.2em;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            page-break-inside: avoid;
+        }
+
+        .section h2 {
+            color: #2563eb;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .section h3 {
+            color: #1e40af;
+            font-size: 1.3em;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #4b5563;
+        }
+
+        .info-value {
+            color: #1f2937;
+        }
+
+        .members-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .members-list li {
+            padding: 10px;
+            margin: 5px 0;
+            background: #f3f4f6;
+            border-left: 4px solid #2563eb;
+            padding-left: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        thead {
+            background: #2563eb;
+            color: white;
+        }
+
+        th,
+        td {
+            padding: 15px;
+            text-align: left;
+            border: 1px solid #e5e7eb;
+        }
+
+        tbody tr:nth-child(even) {
+            background: #f9fafb;
+        }
+
+        tbody tr:hover {
+            background: #f3f4f6;
+        }
+
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .tech-badge {
+            background: #dbeafe;
+            color: #1e40af;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        .url-box {
+            background: #f0fdf4;
+            border: 2px solid #10b981;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            word-break: break-all;
+        }
+
+        .url-box a {
+            color: #059669;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+
+        .url-box a:hover {
+            text-decoration: underline;
+        }
+
+        .architecture-img {
+            width: 100%;
+            max-width: 800px;
+            margin: 30px auto;
+            display: block;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .pipeline-flow {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .pipeline-flow h4 {
+            color: #92400e;
+            margin-bottom: 10px;
+        }
+
+        .pipeline-flow ol {
+            margin-left: 20px;
+        }
+
+        .pipeline-flow li {
+            margin: 8px 0;
+            color: #78350f;
+        }
+
+        .highlight-box {
+            background: #eff6ff;
+            border: 1px solid #3b82f6;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .footer {
+            margin-top: 60px;
+            padding-top: 30px;
+            border-top: 2px solid #e5e7eb;
+            text-align: center;
+            color: #6b7280;
+            font-size: 0.9em;
+        }
+
+        code {
+            background: #f3f4f6;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #ef4444;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .container {
+                box-shadow: none;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- En-tête -->
+        <div class="header">
+            <h1>🩺 Diabetes Prediction</h1>
+            <p class="subtitle">Projet MLOps - Déploiement Cloud AWS</p>
+            <p style="margin-top: 20px; color: #6b7280;">Groupe G3-MG05</p>
+        </div>
+
+        <!-- Section 1: Informations du groupe -->
+        <div class="section">
+            <h2>1. Informations du Groupe</h2>
+
+            <div class="info-grid">
+                <div class="info-label">Identifiant :</div>
+                <div class="info-value"><strong>G3-MG05</strong></div>
+
+                <div class="info-label">Titre du projet :</div>
+                <div class="info-value"><strong>Diabetes Prediction</strong></div>
+            </div>
+
+            <h3>Membres du groupe</h3>
+            <ul class="members-list">
+                <li>Tom URBAN</li>
+                <li>Ethan SMADJA</li>
+                <li>Samuel SIDOUN</li>
+                <li>Lucas ARRIESSE</li>
+            </ul>
+        </div>
+
+        <!-- Section 2: Informations du projet -->
+        <div class="section">
+            <h2>2. Informations du Projet</h2>
+
+            <h3>Dépôt GitHub</h3>
+            <div class="url-box">
+                <a href="https://github.com/TomGit8/Diabetes-Prediction" target="_blank">
+                    https://github.com/TomGit8/Diabetes-Prediction
+                </a>
+            </div>
+
+            <h3>Description du projet</h3>
+
+            <div class="highlight-box">
+                <h4 style="color: #1e40af; margin-bottom: 15px;">🎯 Objectif</h4>
+                <p><strong>Diabetes Prediction</strong> est une application web de prédiction du diabète basée sur des
+                    données médicales. Elle utilise un modèle de Machine Learning entraîné sur le dataset Pima Indians
+                    Diabetes pour estimer la probabilité qu'un patient développe un diabète.</p>
+            </div>
+
+            <h4>Ce que fait l'application</h4>
+            <ul style="margin-left: 20px; margin-top: 10px;">
+                <li>Collecte des données médicales du patient via un formulaire web intuitif</li>
+                <li>Effectue une prédiction en temps réel à l'aide d'un modèle ML pré-entraîné</li>
+                <li>Affiche une probabilité de risque avec une jauge visuelle colorée</li>
+                <li>Fournit un résultat clair : "Diabétique" ou "Non diabétique"</li>
+            </ul>
+
+            <h4 style="margin-top: 20px;">Problème résolu</h4>
+            <p>L'application permet aux professionnels de santé d'obtenir une <strong>estimation rapide du risque de
+                    diabète</strong> d'un patient sans avoir besoin d'analyses approfondies. Cela facilite le dépistage
+                précoce et l'orientation vers des examens complémentaires si nécessaire.</p>
+
+            <h3>Technologies utilisées</h3>
+            <div class="tech-stack">
+                <span class="tech-badge">Python 3.11</span>
+                <span class="tech-badge">Flask</span>
+                <span class="tech-badge">Scikit-learn</span>
+                <span class="tech-badge">Pandas</span>
+                <span class="tech-badge">NumPy</span>
+                <span class="tech-badge">Docker</span>
+                <span class="tech-badge">Terraform</span>
+                <span class="tech-badge">GitHub Actions</span>
+                <span class="tech-badge">AWS (S3, ECR, App Runner)</span>
+                <span class="tech-badge">Gunicorn</span>
+            </div>
+        </div>
+
+        <!-- Section 3: Services AWS -->
+        <div class="section">
+            <h2>3. Services AWS Utilisés</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Service AWS</th>
+                        <th>Nom de la ressource</th>
+                        <th>Rôle</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Amazon S3</strong></td>
+                        <td><code>s3-g3mg05</code></td>
+                        <td>Stockage des modèles ML entraînés (.joblib), des métriques d'évaluation et des
+                            configurations d'entraînement</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Amazon ECR</strong></td>
+                        <td><code>ecr-g3mg05</code></td>
+                        <td>Registre privé pour stocker les images Docker de l'application Flask</td>
+                    </tr>
+                    <tr>
+                        <td><strong>AWS App Runner</strong></td>
+                        <td><code>apprunner-g3mg05</code></td>
+                        <td>Service managé pour déployer et héberger l'application web avec auto-scaling et déploiement
+                            automatique</td>
+                    </tr>
+                    <tr>
+                        <td><strong>AWS IAM</strong></td>
+                        <td><code>AppRunnerECRAccessRole-g3mg05</code></td>
+                        <td>Rôle IAM permettant à App Runner de récupérer les images depuis ECR de manière sécurisée
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Configuration des ressources</h3>
+            <ul style="margin-left: 20px; margin-top: 15px;">
+                <li><strong>Région AWS :</strong> <code>us-east-1</code> (Virginie du Nord)</li>
+                <li><strong>Instance App Runner :</strong> 1 vCPU, 2 GB RAM</li>
+                <li><strong>Port d'écoute :</strong> 8501</li>
+                <li><strong>Sécurité S3 :</strong> Accès public bloqué (Private bucket)</li>
+                <li><strong>ECR :</strong> Scan de sécurité activé sur chaque push</li>
+            </ul>
+        </div>
+
+        <!-- Section 4: URL de l'interface -->
+        <div class="section">
+            <h2>4. URL de l'Interface Web</h2>
+
+            <p>L'application est accessible publiquement via l'URL suivante :</p>
+
+            <div class="url-box">
+                <a href="https://7hsbzsvu65.us-east-1.awsapprunner.com" target="_blank">
+                    https://7hsbzsvu65.us-east-1.awsapprunner.com
+                </a>
+            </div>
+
+            <p style="margin-top: 15px; color: #6b7280;">
+                <em>Note : Cette URL est générée automatiquement par AWS App Runner et reste stable tant que le service
+                    est actif.</em>
+            </p>
+        </div>
+
+        <!-- Section 5: Architecture -->
+        <div class="section">
+            <h2>5. Architecture du Système</h2>
+
+            <h3>Type d'architecture</h3>
+            <p>Le projet utilise une <strong>architecture monolithique</strong> adaptée à ce cas d'usage. L'application
+                Flask gère à la fois l'interface utilisateur et la logique de prédiction dans un seul conteneur Docker.
+            </p>
+
+            <h3>Diagramme d'architecture</h3>
+            <img src="mlops_architecture_diagram_1766831795877.png" alt="Architecture MLOps" class="architecture-img">
+
+            <h3>Flux de déploiement</h3>
+            <div class="pipeline-flow">
+                <h4>📦 Pipeline CI/CD</h4>
+                <ol>
+                    <li><strong>Développement :</strong> Les développeurs poussent le code sur la branche
+                        <code>main</code> du dépôt GitHub</li>
+                    <li><strong>Tests & Entraînement :</strong> GitHub Actions exécute <code>model.py</code> pour
+                        entraîner le modèle et valider le code</li>
+                    <li><strong>Upload S3 :</strong> Les artefacts (modèle .joblib, métriques, config) sont uploadés sur
+                        S3</li>
+                    <li><strong>Build Docker :</strong> L'image Docker est construite avec le modèle intégré</li>
+                    <li><strong>Push ECR :</strong> L'image est poussée vers Amazon ECR avec le tag <code>latest</code>
+                    </li>
+                    <li><strong>Déploiement automatique :</strong> App Runner détecte la nouvelle image et redéploie
+                        l'application automatiquement</li>
+                    <li><strong>Accès utilisateur :</strong> L'application est accessible via l'URL publique App Runner
+                    </li>
+                </ol>
+            </div>
+
+            <h3>Composants techniques</h3>
+
+            <h4>Infrastructure as Code (Terraform)</h4>
+            <p>Toute l'infrastructure AWS est définie dans <code>terraform/main.tf</code> :</p>
+            <ul style="margin-left: 20px; margin-top: 10px;">
+                <li>Création automatique des ressources S3, ECR, App Runner et IAM</li>
+                <li>Configuration reproductible et versionnable</li>
+                <li>Outputs pour récupérer les URLs et identifiants des ressources</li>
+            </ul>
+
+            <h4>Pipeline CI/CD (GitHub Actions)</h4>
+            <p>Le workflow <code>.github/workflows/deploy.yml</code> automatise :</p>
+            <ul style="margin-left: 20px; margin-top: 10px;">
+                <li><strong>Job 1 - Integration Test :</strong> Installation des dépendances, entraînement du modèle,
+                    upload S3</li>
+                <li><strong>Job 2 - Build & Deploy :</strong> Construction de l'image Docker, push vers ECR</li>
+                <li>Déclenchement automatique sur chaque push vers <code>main</code></li>
+            </ul>
+
+            <h4>Application Flask</h4>
+            <p>L'application web (<code>app_flask.py</code>) :</p>
+            <ul style="margin-left: 20px; margin-top: 10px;">
+                <li>Charge le modèle ML au démarrage</li>
+                <li>Génère dynamiquement un formulaire basé sur les statistiques du dataset</li>
+                <li>Effectue des prédictions en temps réel via <code>predict_proba()</code></li>
+                <li>Affiche les résultats avec une interface moderne (HTML/CSS)</li>
+                <li>Servie par Gunicorn (serveur WSGI production-ready)</li>
+            </ul>
+        </div>
+
+        <!-- Section 6: Qualité du code -->
+        <div class="section">
+            <h2>6. Qualité du Code et Bonnes Pratiques</h2>
+
+            <h3>Structure du projet</h3>
+            <ul style="margin-left: 20px;">
+                <li><code>model.py</code> : Pipeline d'entraînement ML (preprocessing, cross-validation, sauvegarde)
+                </li>
+                <li><code>app_flask.py</code> : Application web Flask avec logique de prédiction</li>
+                <li><code>templates/index.html</code> : Interface utilisateur responsive</li>
+                <li><code>Dockerfile</code> : Conteneurisation de l'application</li>
+                <li><code>terraform/main.tf</code> : Infrastructure as Code</li>
+                <li><code>.github/workflows/deploy.yml</code> : Pipeline CI/CD</li>
+                <li><code>requirements.txt</code> : Gestion des dépendances Python</li>
+            </ul>
+
+            <h3>Bonnes pratiques appliquées</h3>
+            <ul style="margin-left: 20px; margin-top: 15px;">
+                <li>✅ <strong>Séparation des responsabilités :</strong> Entraînement (model.py) et prédiction
+                    (app_flask.py) séparés</li>
+                <li>✅ <strong>Configuration externalisée :</strong> Utilisation de variables d'environnement et fichiers
+                    de config</li>
+                <li>✅ <strong>Gestion d'erreurs :</strong> Try/catch pour les prédictions avec messages d'erreur clairs
+                </li>
+                <li>✅ <strong>Logging :</strong> Logs détaillés dans model.py pour le suivi de l'entraînement</li>
+                <li>✅ <strong>Sécurité :</strong> Secrets GitHub pour les credentials AWS, bucket S3 privé</li>
+                <li>✅ <strong>Reproductibilité :</strong> Random state fixé, requirements.txt versionné</li>
+                <li>✅ <strong>Documentation :</strong> README.md, commentaires dans le code, ce rapport</li>
+            </ul>
+
+            <h3>Tests et validation</h3>
+            <ul style="margin-left: 20px; margin-top: 15px;">
+                <li><strong>Cross-validation :</strong> 5-fold CV pour évaluer la robustesse du modèle</li>
+                <li><strong>Test d'intégration :</strong> Exécution de <code>model.py</code> dans le pipeline CI/CD</li>
+                <li><strong>Validation du build :</strong> Échec du pipeline si l'entraînement échoue</li>
+            </ul>
+        </div>
+
+        <!-- Section 7: Fonctionnalités -->
+        <div class="section">
+            <h2>7. Fonctionnalités de l'Application</h2>
+
+            <h3>Interface utilisateur</h3>
+            <ul style="margin-left: 20px;">
+                <li>📝 <strong>Formulaire dynamique :</strong> Génération automatique des champs basée sur le dataset
+                </li>
+                <li>🌍 <strong>Labels en français :</strong> Traduction des termes médicaux pour une meilleure UX</li>
+                <li>📊 <strong>Jauge de risque visuelle :</strong> Barre de progression colorée (vert → jaune → rouge)
+                </li>
+                <li>⏳ <strong>Indicateur de chargement :</strong> Spinner animé pendant le calcul</li>
+                <li>📱 <strong>Design responsive :</strong> Adaptation mobile/tablette/desktop</li>
+                <li>🎨 <strong>Interface moderne :</strong> Utilisation de CSS moderne avec animations</li>
+            </ul>
+
+            <h3>Fonctionnalités ML</h3>
+            <ul style="margin-left: 20px; margin-top: 15px;">
+                <li>🤖 <strong>Modèle Random Forest :</strong> Entraîné avec hyperparamètres optimisés</li>
+                <li>📈 <strong>Prédiction probabiliste :</strong> Affichage du pourcentage de risque (0-100%)</li>
+                <li>🔄 <strong>Réentraînement automatique :</strong> À chaque déploiement via le pipeline</li>
+                <li>💾 <strong>Persistance S3 :</strong> Sauvegarde automatique des artefacts dans le cloud</li>
+            </ul>
+
+            <h3>Cas d'usage</h3>
+            <p>L'application s'adresse aux <strong>professionnels de santé</strong> qui souhaitent :</p>
+            <ul style="margin-left: 20px; margin-top: 10px;">
+                <li>Effectuer un dépistage rapide du diabète</li>
+                <li>Identifier les patients à risque nécessitant des examens approfondis</li>
+                <li>Obtenir une estimation basée sur des données médicales simples</li>
+            </ul>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p><strong>Groupe G3-MG05</strong> | Projet MLOps | Décembre 2024</p>
+            <p style="margin-top: 10px;">Document généré pour la restitution du projet MLOps</p>
+        </div>
+    </div>
+</body>
+
+</html>
